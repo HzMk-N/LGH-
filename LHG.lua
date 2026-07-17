@@ -156,25 +156,6 @@ MovementTab:Toggle({
     end
 })
 
-MovementTab:Toggle({
-    Title = "Speed",
-    Value = false,
-    Callback = function(Value)
-        speedEnabled = Value
-        updateSpeed()
-    end
-})
-
-MovementTab:Slider({
-    Title = "Speed Value",
-    Value = { Min = 16, Max = 300, Default = 50 },
-    Step = 1,
-    Callback = function(Value)
-        speedValue = Value
-        if speedEnabled then updateSpeed() end
-    end
-})
-
 MovementTab:Button({
     Title = "Fling Giant",
     Desc = "Fling",
@@ -219,13 +200,6 @@ VisualsTab:Toggle({
             end
         end
     end
-})
-
-VisualsTab:Slider({
-    Title = "Field of View (POV)",
-    Value = { Min = 30, Max = 150, Default = 70 },
-    Step = 1,
-    Callback = setFOV
 })
 
 UtilityTab:Button({
