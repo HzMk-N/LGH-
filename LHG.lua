@@ -1,25 +1,30 @@
-local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+local WindUI = loadstring(game:HttpGet('https://raw.githubusercontent.com/Footagesus/WindUI/main/dist/main.lua'))()
 
-local Window = Rayfield:CreateWindow({
-   Name = "LGH | Lurking Giants",
-   LoadingTitle = "LGH",
-   LoadingSubtitle = "The script is currently in the testing phase HNhub.",
-   ConfigurationSaving = {
-      Enabled = true,
-      FolderName = "LGH",
-      FileName = "Config"
-   },
-   KeySystem = false
+local Window = WindUI:CreateWindow({
+    Title = "LGH | Lurking Giants",
+    Icon = "sword",
+    Author = "HNhub",
+    Folder = "LGH",
+    Theme = "Violet",
+    Transparent = true,
+    BackgroundImageTransparency = 0.35,
+    Size = UDim2.fromOffset(620, 480),
+    Resizable = true,
 })
 
-local MainTab = Window:CreateTab("Main", 4483362458)
-local MovementTab = Window:CreateTab("Movement", 4483362458)
-local VisualsTab = Window:CreateTab("Visuals", 4483362458)
-local UtilityTab = Window:CreateTab("Utility", 4483362458)
+WindUI:Notify({
+    Title = "LGH Loaded",
+    Content = "Script beta - Testing phase",
+    Duration = 6
+})
+
+local MainTab = Window:Tab({ Title = "Main", Icon = "home" })
+local MovementTab = Window:Tab({ Title = "Movement", Icon = "move" })
+local VisualsTab = Window:Tab({ Title = "Visuals", Icon = "eye" })
+local UtilityTab = Window:Tab({ Title = "Utility", Icon = "settings" })
 
 local noclipEnabled = false
 local infJumpEnabled = false
-local godEnabled = false
 local espEnabled = false
 local brightEnabled = false
 local speedEnabled = false
@@ -33,6 +38,8 @@ local Workspace = game:GetService("Workspace")
 
 local player = Players.LocalPlayer
 local camera = Workspace.CurrentCamera
+
+local espObjects = {}
 
 local function toggleBright(state)
     brightEnabled = state
@@ -63,8 +70,6 @@ local function updateSpeed()
         hum.WalkSpeed = speedEnabled and speedValue or 16
     end
 end
-
-local espObjects = {}
 
 local function createESP(target)
     if espObjects[target] then return end
@@ -135,74 +140,114 @@ local function giveTPTool()
     end)
 end
 
-MainTab:CreateToggle({ Name = "God Mode", CurrentValue = false, Callback = function(Value) godEnabled = Value end })
-MainTab:CreateToggle({ Name = "Infinite Jump", CurrentValue = false, Callback = function(Value) infJumpEnabled = Value end })
 
-MovementTab:CreateToggle({ Name = "NoClip", CurrentValue = false, Callback = function(Value) noclipEnabled = Value end })
+MainTab:Toggle({
+    Title = "God Mode",
+    Value = false,
+    Callback = function(Value)
+        godEnabled = Value
+    end
+})
 
-MovementTab:CreateToggle({ 
-    Name = "Speed", 
-    CurrentValue = false, 
+MainTab:Toggle({
+    Title = "Infinite Jump",
+    Value = false,
+    Callback = function(Value)
+        infJumpEnabled = Value
+    end
+})
+
+-- Movement Tab
+MovementTab:Toggle({
+    Title = "NoClip",
+    Value = false,
+    Callback = function(Value)
+        noclipEnabled = Value
+    end
+})
+
+MovementTab:Toggle({
+    Title = "Speed",
+    Value = false,
     Callback = function(Value)
         speedEnabled = Value
         updateSpeed()
-    end 
+    end
 })
 
-MovementTab:CreateSlider({ 
-    Name = "Speed Value", 
-    Range = {16, 300}, 
-    Increment = 1, 
-    CurrentValue = 50, 
+MovementTab:Slider({
+    Title = "Speed Value",
+    Value = { Min = 16, Max = 300, Default = 50 },
+    Step = 1,
     Callback = function(Value)
         speedValue = Value
         if speedEnabled then updateSpeed() end
-    end 
+    end
 })
 
-MovementTab:CreateButton({
-   Name = "fling giant: hướng dẫn sử dụng: đầu tiên tp đến giant (tool tp) hoặc đi đến chỗ giant và nhảy lên cho dính hitbox thân của giant thì giant sẽ bị fling.",
-   Callback = function()
-      loadstring(game:HttpGet("https://pastefy.app/Vf5POrA6/raw"))()
-      Rayfield:Notify({
-         Title = "Fling",
-         Content = "You can only fling the giant; Giant has a hitbox high up, so you have to jump up to be able to fling Giant Vietsub: Bạn chỉ có thể ném gã khổng lồ; Gã khổng lồ, Vùng va chạm của nó ở vị trí khá cao, nên bạn phải nhảy lên mới có thể ném được gã khổng lồ..!",
-         Duration = 4
-      })
-   end,
+MovementTab:Button({
+    Title = "Fling Giant",
+    Desc = "Fling",
+    Callback = function()
+        loadstring(game:HttpGet("https://pastefy.app/Vf5POrA6/raw"))()
+        WindUI:Notify({
+            Title = "Fling ",
+            Content = "Fling",
+            Duration = 6
+        })
+    end
 })
 
-VisualsTab:CreateToggle({ Name = "Bright / Fullbright", CurrentValue = false, Callback = toggleBright })
+MovementTab:Button({
+    Title = "Tool Teleport",
+    Callback = function()
+        giveTPTool()
+        WindUI:Notify({ Title = "Teleport Tool", Content = "Đã thêm Tool Teleport vào Backpack!", Duration = 4 })
+    end
+})
 
-VisualsTab:CreateToggle({
-   Name = "ESP",
-   CurrentValue = false,
-   Callback = function(Value)
-      espEnabled = Value
-      if Value then
-         for _, v in ipairs(Workspace:GetDescendants()) do
-            if v:FindFirstChild("Humanoid") or v.Name:find("Giant") then
-               createESP(v)
+-- Visuals Tab
+VisualsTab:Toggle({
+    Title = "Bright / Fullbright",
+    Value = false,
+    Callback = toggleBright
+})
+
+VisualsTab:Toggle({
+    Title = "ESP",
+    Value = false,
+    Callback = function(Value)
+        espEnabled = Value
+        if Value then
+            for _, v in ipairs(Workspace:GetDescendants()) do
+                if v:FindFirstChild("Humanoid") or v.Name:find("Giant") then
+                    createESP(v)
+                end
             end
-         end
-      else
-         for target, _ in pairs(espObjects) do removeESP(target) end
-      end
-   end,
+        else
+            for target, _ in pairs(espObjects) do
+                removeESP(target)
+            end
+        end
+    end
 })
 
-VisualsTab:CreateSlider({ Name = "POV (Field of View)", Range = {30, 150}, Increment = 1, CurrentValue = 70, Callback = setFOV })
-
-MovementTab:CreateButton({
-   Name = "Tool Teleport",
-   Callback = function()
-      giveTPTool()
-   end,
+VisualsTab:Slider({
+    Title = "Field of View (POV)",
+    Value = { Min = 30, Max = 150, Default = 70 },
+    Step = 1,
+    Callback = setFOV
 })
 
-UtilityTab:CreateButton({ Name = "Reset Character", Callback = function()
-    if player.Character then player.Character:BreakJoints() end
-end})
+-- Utility Tab
+UtilityTab:Button({
+    Title = "Reset Character",
+    Callback = function()
+        if player.Character then
+            player.Character:BreakJoints()
+        end
+    end
+})
 
 RunService.RenderStepped:Connect(function()
     local char = player.Character
@@ -216,7 +261,9 @@ RunService.RenderStepped:Connect(function()
 
     if noclipEnabled then
         for _, part in pairs(char:GetDescendants()) do
-            if part:IsA("BasePart") then part.CanCollide = false end
+            if part:IsA("BasePart") then 
+                part.CanCollide = false 
+            end
         end
     end
 
@@ -232,7 +279,9 @@ end)
 UserInputService.JumpRequest:Connect(function()
     if infJumpEnabled then
         local hum = player.Character and player.Character:FindFirstChild("Humanoid")
-        if hum then hum:ChangeState(Enum.HumanoidStateType.Jumping) end
+        if hum then 
+            hum:ChangeState(Enum.HumanoidStateType.Jumping) 
+        end
     end
 end)
 
@@ -243,13 +292,7 @@ Workspace.DescendantAdded:Connect(function(desc)
     end
 end)
 
-player.CharacterAdded:Connect(function(newChar)
+player.CharacterAdded:Connect(function()
     task.wait(1)
     updateSpeed()
 end)
-
-Rayfield:Notify({
-   Title = "LGH Loaded",
-   Content = "Script beta",
-   Duration = 6,
-})
