@@ -140,15 +140,6 @@ local function giveTPTool()
     end)
 end
 
-
-MainTab:Toggle({
-    Title = "God Mode",
-    Value = false,
-    Callback = function(Value)
-        godEnabled = Value
-    end
-})
-
 MainTab:Toggle({
     Title = "Infinite Jump",
     Value = false,
@@ -157,7 +148,6 @@ MainTab:Toggle({
     end
 })
 
--- Movement Tab
 MovementTab:Toggle({
     Title = "NoClip",
     Value = false,
@@ -206,7 +196,6 @@ MovementTab:Button({
     end
 })
 
--- Visuals Tab
 VisualsTab:Toggle({
     Title = "Bright / Fullbright",
     Value = false,
@@ -239,7 +228,6 @@ VisualsTab:Slider({
     Callback = setFOV
 })
 
--- Utility Tab
 UtilityTab:Button({
     Title = "Reset Character",
     Callback = function()
